@@ -1,0 +1,113 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+class Book {
+private:
+    std::string title;
+    std::string author;
+    bool isAvailable;
+
+public:
+    Book(std::string t, std::string a) : title(t), author(a), isAvailable(true) {}
+
+    std::string getTitle() const { return title; }
+    std::string getAuthor() const { return author; }
+    bool checkAvailability() const { return isAvailable; }
+    void borrow() { isAvailable = false; }
+    void returnBook() { isAvailable = true; }
+
+    void displayInfo() const {
+        std::cout << "Title: " << title << ", Author: " << author 
+                  << (isAvailable ? " (Available)" : " (Not Available)") << std::endl;
+    }
+};
+
+class Library {
+private:
+    std::vector<Book> books;
+
+public:
+    void addBook(const Book& book) {
+        books.push_back(book);
+        std::cout << "Book added: " << book.getTitle() << " by " << book.getAuthor() << std::endl;
+    }
+
+    void displayBooks() const {
+        std::cout << "Available Books:\n";
+        for (const auto& book : books) {
+            book.displayInfo();
+        }
+    }
+
+    void borrowBook(const std::string& title) {
+        for (auto& book : books) {
+            if (book.getTitle() == title && book.checkAvailability()) {
+                book.borrow();
+                std::cout << "You borrowed: " << title << std::endl;
+                return;
+            }
+        }
+        std::cout << "Book not available or not found." << std::endl;
+    }
+
+    void returnBook(const std::string& title) {
+        for (auto& book : books) {
+            if (book.getTitle() == title && !book.checkAvailability()) {
+                book.returnBook();
+                std::cout << "You returned: " << title << std::endl;
+                return;
+            }
+        }
+        std::cout << "Book not found or wasn't borrowed." << std::endl;
+    }
+};
+
+int main() {
+    Library library;
+    int choice;
+    std::string title, author;
+
+    while (true) {
+        std::cout << "\nLibrary Management System\n";
+        std::cout << "1. Add Book\n";
+        std::cout << "2. Display Books\n";
+        std::cout << "3. Borrow Book\n";
+        std::cout << "4. Return Book\n";
+        std::cout << "5. Exit\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1:
+                std::cout << "Enter book title: ";
+                std::cin.ignore();
+                std::getline(std::cin, title);
+                std::cout << "Enter book author: ";
+                std::getline(std::cin, author);
+                library.addBook(Book(title, author));
+                break;
+            case 2:
+                library.displayBooks();
+                break;
+            case 3:
+                std::cout << "Enter book title to borrow: ";
+                std::cin.ignore();
+                std::getline(std::cin, title);
+                library.borrowBook(title);
+                break;
+            case 4:
+                std::cout << "Enter book title to return: ";
+                std::cin.ignore();
+                std::getline(std::cin, title);
+                library.returnBook(title);
+                break;
+            case 5:
+                std::cout << "Exiting...\n";
+                return 0;
+            default:
+                std::cout << "Invalid choice. Please try again.\n";
+        }
+    }
+    return 0;
+}
